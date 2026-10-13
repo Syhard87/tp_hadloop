@@ -1,6 +1,6 @@
 # TP Hadoop avancés (Google Colab)
 
-Énoncé : [`sources/TP_Hadoop_avances_avec_TP_ecosysteme.pdf`](sources/TP_Hadoop_avances_avec_TP_ecosysteme.pdf). TP 1 Partie A : pages 5 à 9. TP 2 : pages 12 et 13.
+Énoncé : [`sources/TP_Hadoop_avances_avec_TP_ecosysteme.pdf`](sources/TP_Hadoop_avances_avec_TP_ecosysteme.pdf). TP 1 Partie A : pages 5 à 9. TP 2 : pages 12 et 13. TP 3 : pages 14 et 15.
 
 ## Lancer un TP
 
@@ -8,6 +8,7 @@
 |---|---|
 | TP 1 - Architecte HDFS, Partie A | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/syhard87/tp_hadloop/blob/claude/tp-hadoop-avances-partie-a-mwgfq7/notebooks/TP1_PartieA_Colab.ipynb) |
 | TP 2 - Administrateur HDFS | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/syhard87/tp_hadloop/blob/claude/tp-hadoop-avances-partie-a-mwgfq7/notebooks/TP2_Administrateur_HDFS.ipynb) |
+| TP 3 - MapReduce : CA et qualité | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/syhard87/tp_hadloop/blob/claude/tp-hadoop-avances-partie-a-mwgfq7/notebooks/TP3_MapReduce_Qualite.ipynb) · [Guide de l'oral](docs/TP3_Guide_oral.md) |
 
 1. Cliquer sur le badge (ou, dans Colab : *Fichier → Ouvrir un notebook → GitHub → `syhard87/tp_hadloop`*).
 2. Cliquer sur **Se connecter** en haut à droite et attendre la coche verte.
@@ -19,7 +20,7 @@
 | Quoi | Où | Comment partager |
 |---|---|---|
 | Énoncé, notebook, réponses | ce dépôt GitHub | *Settings → Collaborators → Add people* |
-| Preuves d'exécution (sorties `fsck`, `jps`, md5…) | `MyDrive/TP_Hadoop_partage/preuves_tp` et `preuves_tp2` (créés par les notebooks) | Drive : clic droit sur le dossier → *Partager* |
+| Preuves d'exécution (sorties `fsck`, `jps`, compteurs…) | `MyDrive/TP_Hadoop_partage/preuves_tp`, `preuves_tp2`, `preuves_tp3` (créés par les notebooks) | Drive : clic droit sur le dossier → *Partager* |
 | Notebook exécuté | votre copie Colab dans Drive | Colab : bouton *Partager* en haut à droite |
 
 ## Contenu
@@ -29,7 +30,12 @@ sources/TP_Hadoop_avances_avec_TP_ecosysteme.pdf   énoncé du TP
 notebooks/TP1_PartieA_Colab.ipynb                  TP 1 : cellules 0 à 11 + réponses du « Travail demandé »
 notebooks/TP2_Administrateur_HDFS.ipynb            TP 2 : missions A à D + réponses
 scripts/setup_hadoop_colab.sh                      installation Hadoop 3.5.0 HDFS + YARN dans Colab (rejouable)
+notebooks/TP3_MapReduce_Qualite.ipynb              TP 3 : missions A à E + modification/suppression HDFS + bonus
+tp3/mapper.py, tp3/reducer.py                      TP 3 : code Hadoop Streaming (Python)
+docs/TP3_Guide_oral.md                             TP 3 : définitions, déroulé interne, réponses, questions du jury
 data/logs_web.csv                                  jeu de données du TP 2 (fourni par l'enseignant)
+data/ventes_tp3.csv                                TP 3 : données de l'énoncé (séparateur ;)
+data/ventes.csv                                    TP 3 bonus : ventes de l'enseignant (séparateur ,)
 resultats/reference_fsck_300Mo.txt                 sortie de référence (exécution de test hors Colab)
 ```
 
@@ -71,3 +77,13 @@ Uniquement `data/logs_web.csv`, fourni par l'enseignant : 200 lignes, 192 IP dis
 Le notebook le charge dans `raw/web_logs/ingestion_date=2026-10-11/`. Il en dérive deux fichiers directement dans HDFS :
 - `rejects/web_logs/…/logs_404.csv` : les 48 lignes 404, qui servent de 2e fichier pour `fsck` ;
 - `analytics/web_logs/statuts.csv` : le nombre de requêtes par statut, suivi du marqueur `_READY`.
+
+## TP 3 : résultats obtenus (exécution réelle sur HDFS + YARN)
+
+```
+BE	55.00
+ES	30.00
+FR	66.00
+Map input records=10   Map output records=6   Reduce input groups=3   Reduce output records=3
+Qualite : En_tete=1  Lignes_valides=6  Pays_manquant=1  Quantite_invalide=1  Valeur_negative=1
+```
