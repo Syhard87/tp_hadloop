@@ -17,10 +17,22 @@ fi
 $JAVA_HOME/bin/java -version 2>&1 | head -n 1
 
 echo "=== 2. Hadoop $HADOOP_VERSION ==="
-if [ ! -d $HADOOP_HOME ]; then
-  wget -q https://downloads.apache.org/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz -O /content/hadoop.tar.gz
-  tar -xzf /content/hadoop.tar.gz -C /content
-  rm -f /content/hadoop.tar.gz
+if [ ! -x $HADOOP_HOME/bin/hadoop ]; then
+  ARCHIVE=hadoop-$HADOOP_VERSION.tar.gz
+  rm -rf $HADOOP_HOME /content/$ARCHIVE
+  for MIROIR in https://downloads.apache.org/hadoop/common \
+                https://dlcdn.apache.org/hadoop/common \
+                https://archive.apache.org/dist/hadoop/common; do
+    echo "Téléchargement depuis $MIROIR ..."
+    if wget -q --tries=2 --timeout=60 $MIROIR/hadoop-$HADOOP_VERSION/$ARCHIVE -O /content/$ARCHIVE \
+       && tar -xzf /content/$ARCHIVE -C /content; then
+      break
+    fi
+    echo "Échec avec ce miroir, essai du suivant"
+    rm -rf $HADOOP_HOME /content/$ARCHIVE
+  done
+  rm -f /content/$ARCHIVE
+  [ -x $HADOOP_HOME/bin/hadoop ] || { echo "❌ Impossible de télécharger Hadoop : relancer cette cellule"; exit 1; }
 fi
 hadoop version | head -n 1
 
@@ -81,8 +93,41 @@ if [ ! -d /content/hdfs/name/current ]; then
   echo "Premier démarrage : formatage du NameNode"
   hdfs namenode -format -force -nonInteractive > /content/format_namenode.log 2>&1
 fi
-jps | grep -q " NameNode$" || start-dfs.sh
-jps | grep -q " ResourceManager$" || start-yarn.sh
-hdfs dfsadmin -safemode wait > /dev/null
+
+# Démarre chaque démon manquant individuellement (aussi utile si un seul démon s'est arrêté)
+demarrer() {  # $1 = commande (hdfs|yarn), $2 = démon, $3 = nom affiché par jps
+  if ! jps | grep -q " $3$"; then
+    echo "Démarrage de $3"
+    $1 --daemon start $2
+  fi
+}
+demarrer hdfs namenode NameNode
+demarrer hdfs datanode DataNode
+demarrer hdfs secondarynamenode SecondaryNameNode
+demarrer yarn resourcemanager ResourceManager
+demarrer yarn nodemanager NodeManager
+
+# Attend que HDFS réponde et sorte du safe mode (2 minutes maximum)
+for i in $(seq 1 24); do
+  hdfs dfsadmin -safemode get 2>/dev/null | grep -q "OFF" && break
+  sleep 5
+done
 sleep 5
+
+echo "=== 6. Vérification ==="
 jps
+OK=1
+for D in NameNode:namenode DataNode:datanode ResourceManager:resourcemanager NodeManager:nodemanager; do
+  NOM=${D%%:*}; LOG=${D##*:}
+  if ! jps | grep -q " $NOM$"; then
+    OK=0
+    echo "❌ $NOM ne tourne pas. Dernières lignes de son journal :"
+    tail -n 20 $HADOOP_HOME/logs/*-$LOG-*.log 2>/dev/null | grep -E "ERROR|Exception|FATAL" | tail -n 5
+  fi
+done
+if [ $OK = 1 ] && hdfs dfsadmin -safemode get 2>/dev/null | grep -q OFF; then
+  echo "✅ Hadoop prêt : HDFS (NameNode + DataNode) et YARN (ResourceManager + NodeManager) tournent"
+else
+  echo "❌ Hadoop n'est pas prêt : relancer cette cellule ; si l'erreur persiste, copier ce message"
+  exit 1
+fi
