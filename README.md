@@ -97,7 +97,7 @@ Qualite : En_tete=1  Lignes_valides=6  Pays_manquant=1  Quantite_invalide=1  Val
 | | 200 petits fichiers | 1 fichier compacté |
 |---|---|---|
 | Fichiers / blocs / objets NameNode | 200 / 200 / 401 | 1 / 1 / 3 |
-| Durée du `put` | ≈ 55 s | ≈ 2 s |
+| Durée du `put` | ≈ 35 à 55 s | ≈ 2 s |
 | Job MapReduce (compter 200 lignes) | 200 tâches Map, 343 s | 2 tâches Map, 28 s |
 
 Partitionnement `year/month/day/country` : une requête « 1 jour + 1 pays » ouvre 1 fichier sur 240.

@@ -13,7 +13,7 @@
 |---|---|---|---|
 | Fichiers / blocs | **200 / 200** | **1 / 1** | même donnée : 4 400 octets |
 | Objets dans le NameNode | **401** | **3** | ÷ 134 |
-| Durée du `put` | **55 s** | **2 s** | ≈ 25× |
+| Durée du `put` | **35 à 55 s** | **2 s** | ≈ 20× |
 | Tâches Map pour compter 200 lignes | **200** | **2** | ÷ 100 |
 | Durée du job | **343 s** | **28 s** | ≈ 12× |
 | Requête « 1 jour × 1 pays » sur 240 partitions | - | **1 fichier ouvert** | *partition pruning* |
@@ -111,7 +111,7 @@ QUOTA  REM_QUOTA  SPACE_QUOTA  REM_SPACE_QUOTA  DIR_COUNT  FILE_COUNT  CONTENT_S
 **24. Volume contre nombre d'objets** : 4 400 octets au total, soit 0,003 % d'un bloc de 128 Mo, mais **401 objets**
 pour le NameNode (200 fichiers + 200 blocs + 1 répertoire). Dans un seul fichier, il n'en faudrait que **3**.
 Le DataNode, lui, stocke **400 fichiers** sur son disque (200 blocs + 200 fichiers `.meta` de sommes de contrôle).
-Le `put` a pris **55 s** pour 4,3 Ko, contre 2 s pour le même contenu en un seul fichier.
+Le `put` a pris **35 à 55 s** selon les essais pour 4,3 Ko, contre 2 s pour le même contenu en un seul fichier.
 
 **25. Pourquoi les métadonnées sont surchargées** :
 - Le NameNode garde toutes les métadonnées **en RAM**, environ 150 octets par objet, **quelle que soit la taille du
@@ -144,7 +144,7 @@ Le répertoire compte pour 1, donc seuls 49 fichiers passent. C'est un garde-fou
 | Fichiers | 200 | **1** |
 | Blocs | 200 | **1** |
 | Objets NameNode | 401 | **3** |
-| Durée du put | ≈ 55 s | ≈ 2 s |
+| Durée du put | ≈ 35 à 55 s | ≈ 2 s |
 | Tâches Map | 200 (343 s) | 2 (28 s) |
 
 **Gain pour le NameNode** : 134 fois moins d'objets en mémoire, 200 fois moins de blocs dans les rapports des DataNodes,
@@ -250,7 +250,7 @@ Le chiffre exact dépend de la version et de la longueur des noms. Ce qui compte
 redémarrage plus lent (rechargement de `fsimage`). Les petits fichiers pénalisent aussi les **traitements**, pas
 seulement le NameNode.
 
-**Q : Pourquoi le `put` de 200 fichiers prend-il 55 s ?**
+**Q : Pourquoi le `put` de 200 fichiers prend-il presque une minute ?**
 Pour chaque fichier, le client fait plusieurs allers-retours avec le NameNode (création, allocation du bloc, fermeture
 avec attente de confirmation) et ouvre un pipeline vers le DataNode. Ce coût fixe se répète 200 fois, alors que le
 transfert de 22 octets est négligeable.
