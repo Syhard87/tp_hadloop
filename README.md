@@ -29,7 +29,7 @@ sources/TP_Hadoop_avances_avec_TP_ecosysteme.pdf   énoncé du TP
 notebooks/TP1_PartieA_Colab.ipynb                  TP 1 : cellules 0 à 11 + réponses du « Travail demandé »
 notebooks/TP2_Administrateur_HDFS.ipynb            TP 2 : missions A à D + réponses
 scripts/setup_hadoop_colab.sh                      installation Hadoop 3.5.0 HDFS + YARN dans Colab (rejouable)
-data/                                              jeux de données du TP 2 (ventes, clients, produits, logs_web)
+data/logs_web.csv                                  jeu de données du TP 2 (fourni par l'enseignant)
 resultats/reference_fsck_300Mo.txt                 sortie de référence (exécution de test hors Colab)
 ```
 
@@ -57,13 +57,17 @@ md5 local == md5 HDFS
 
 Les réponses rédigées aux 5 questions du « Travail demandé » se trouvent à la fin du notebook.
 
-## TP 2 : jeux de données
+## TP 2 : jeu de données
 
-`logs_web.csv` est fourni par l'enseignant. Les trois autres fichiers ont été préparés avec les anomalies demandées :
+Uniquement `data/logs_web.csv`, fourni par l'enseignant : 200 lignes, 192 IP distinctes, le 01/10/2026 de 08h01 à 11h29.
 
-| Fichier | Lignes | Anomalie |
-|---|---|---|
-| `ventes.csv` | 14 | 1 ligne en double (`2026-10-06,BE,P03,2,12.00`) |
-| `clients.csv` | 10 | 1 pays manquant (`C006`) |
-| `produits.csv` | 8 | 1 prix invalide (`P07,tableaux,abc`) |
-| `logs_web.csv` | 200 | 48 statuts 404 (24 `/ancienne-page`, 24 `/produits/xyz`), plus 5 × 301 et 1 × 500 |
+| Statut | Requêtes |
+|---|---|
+| 200 | 146 |
+| 404 | 48 (24 `/ancienne-page`, 24 `/produits/xyz`) |
+| 301 | 5 |
+| 500 | 1 (`/connexion`) |
+
+Le notebook le charge dans `raw/web_logs/ingestion_date=2026-10-11/`. Il en dérive deux fichiers directement dans HDFS :
+- `rejects/web_logs/…/logs_404.csv` : les 48 lignes 404, qui servent de 2e fichier pour `fsck` ;
+- `analytics/web_logs/statuts.csv` : le nombre de requêtes par statut, suivi du marqueur `_READY`.
