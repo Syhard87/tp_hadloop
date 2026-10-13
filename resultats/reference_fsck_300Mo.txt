@@ -1,0 +1,37 @@
+# Sortie de référence obtenue lors d'un test (Hadoop 3.5.0, Java 17, 1 DataNode) - pas dans Colab
+
+Found 1 items
+-rw-r--r--   3 root supergroup  314572800 2026-10-13 09:33 /tp1/input/logs_300Mo.bin
+Nom=logs_300Mo.bin Taille=314572800 Replication=3
+
+FSCK started by root (auth:SIMPLE) from /127.0.0.1 for path /tp1/input/logs_300Mo.bin at Tue Oct 13 09:34:35 UTC 2026
+
+/tp1/input/logs_300Mo.bin 314572800 bytes, replicated: replication=3, 3 block(s):  Under replicated BP-1105626545-127.0.0.1-1791883985193:blk_1073741825_1001. Target Replicas is 3 but found 1 live replica(s), 0 decommissioned replica(s), 0 decommissioning replica(s).
+ Under replicated BP-1105626545-127.0.0.1-1791883985193:blk_1073741826_1002. Target Replicas is 3 but found 1 live replica(s), 0 decommissioned replica(s), 0 decommissioning replica(s).
+ Under replicated BP-1105626545-127.0.0.1-1791883985193:blk_1073741827_1003. Target Replicas is 3 but found 1 live replica(s), 0 decommissioned replica(s), 0 decommissioning replica(s).
+0. BP-1105626545-127.0.0.1-1791883985193:blk_1073741825_1001 len=134217728 Live_repl=1  [DatanodeInfoWithStorage[127.0.0.1:9866,DS-a81fcbb5-ac2a-4b1e-9366-0ab08b573f0d,DISK]]
+1. BP-1105626545-127.0.0.1-1791883985193:blk_1073741826_1002 len=134217728 Live_repl=1  [DatanodeInfoWithStorage[127.0.0.1:9866,DS-a81fcbb5-ac2a-4b1e-9366-0ab08b573f0d,DISK]]
+2. BP-1105626545-127.0.0.1-1791883985193:blk_1073741827_1003 len=46137344 Live_repl=1  [DatanodeInfoWithStorage[127.0.0.1:9866,DS-a81fcbb5-ac2a-4b1e-9366-0ab08b573f0d,DISK]]
+
+
+Status: HEALTHY
+ Number of data-nodes:	1
+ Number of racks:		1
+ Total dirs:			0
+ Total symlinks:		0
+
+Replicated Blocks:
+ Total size:	314572800 B
+ Total files:	1
+ Total blocks (validated):	3 (avg. block size 104857600 B)
+ Minimally replicated blocks:	3 (100.0 %)
+ Over-replicated blocks:	0 (0.0 %)
+ Under-replicated blocks:	3 (100.0 %)
+ Mis-replicated blocks:		0 (0.0 %)
+ Default replication factor:	1
+ Average block replication:	1.0
+ Missing blocks:		0
+ Corrupt blocks:		0
+ Missing replicas:		6 (66.666664 %)
+ Blocks queued for replication:	0
+
